@@ -79,49 +79,93 @@
             50% { opacity: 1; }
         }
 
-        #video-container {
+        .intro-bg-wrapper {
+            position: absolute;
+            inset: 0;
+            background-image: url('intro_bg.png');
+            background-size: cover;
+            background-position: center;
             display: none;
-            width: 100%;
-            height: 100%;
-            background: black;
+            z-index: 1000;
         }
 
-        #marvel-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        /* FALLBACK INTRO IF VIDEO FAILS */
-        .fallback-intro {
-            display: none;
+        .marvel-animation-container {
+            display: none; /* Shown after click */
             align-items: center;
             justify-content: center;
-            animation: zoomIn 3.5s forwards;
-            flex-direction: column;
+            animation: zoomIn 4.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+            position: absolute;
+            inset: 0;
+            z-index: 1001;
         }
 
         .marvel-box {
             background-color: var(--marvel-red);
             padding: 5px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             overflow: hidden;
-            border-radius: 2px;
+            position: relative;
         }
 
         .marvel-text {
             font-family: 'Bebas Neue', sans-serif;
-            font-size: clamp(4rem, 10vw, 8rem);
-            color: white;
+            font-size: clamp(4rem, 8vw, 7rem);
+            color: transparent;
+            background-image: url('https://images.unsplash.com/photo-1612036782180-6f0b6ce846ce?q=80&w=2070&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            -webkit-background-clip: text;
+            background-clip: text;
+            letter-spacing: -2px;
             margin: 0;
-            line-height: 1.1;
-            letter-spacing: 2px;
+            line-height: 1;
+        }
+
+        @keyframes flipPages {
+            0% { background-position: 0% 50%; color: transparent; }
+            20% { background-position: 50% 100%; color: transparent; }
+            40% { background-position: 100% 0%; color: transparent; }
+            60% { background-position: 20% 80%; color: transparent; }
+            80% { background-position: 80% 20%; color: transparent; }
+            90% { color: transparent; }
+            95% { color: white; background-image: none; }
+            100% { color: white; background-image: none; }
+        }
+
+        .marvel-text.animate-text {
+            animation: flipPages 3s steps(10) forwards;
+        }
+
+        .studios-text {
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 800;
+            font-size: clamp(1rem, 3vw, 2.2rem);
+            letter-spacing: 6px;
+            margin-left: 15px;
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
+            padding: 5px 0;
+            line-height: 1;
+            opacity: 0;
+            color: white;
+        }
+
+        .studios-text.animate-studios {
+            animation: fadeInRight 0.5s ease forwards 2.5s;
         }
 
         @keyframes zoomIn {
-            0% { transform: scale(0.5); opacity: 0; }
-            10% { transform: scale(1); opacity: 1; }
-            80% { transform: scale(1); opacity: 1; filter: blur(0); }
-            100% { transform: scale(10); opacity: 0; filter: blur(5px); }
+            0% { transform: scale(0.5); }
+            10% { transform: scale(0.8); }
+            85% { transform: scale(1); opacity: 1; filter: blur(0); }
+            100% { transform: scale(15); opacity: 0; filter: blur(4px); }
+        }
+
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
 
         /* MAIN PORTFOLIO SCENE */
@@ -374,17 +418,13 @@
     <div id="intro-scene">
         <div id="click-prompt">CLICK TO ENTER</div>
         
-        <!-- Video Container for Custom Marvel Intro -->
-        <div id="video-container">
-            <!-- Ensure to have marvel_intro.mp4 in the same directory -->
-            <video id="marvel-video" src="marvel_intro.mp4" playsinline></video>
-        </div>
+        <div class="intro-bg-wrapper" id="intro-bg-wrapper"></div>
 
-        <!-- Fallback CSS Intro if Video is Missing -->
-        <div class="fallback-intro" id="fallback-intro">
+        <div class="marvel-animation-container" id="marvel-anim">
             <div class="marvel-box">
-                <div class="marvel-text">VU DUY QUANG</div>
+                <div class="marvel-text" id="m-text">VU DUY QUANG</div>
             </div>
+            <div class="studios-text" id="s-text">PORTFOLIO</div>
         </div>
     </div>
 
@@ -551,9 +591,10 @@
         
         const introScene = document.getElementById('intro-scene');
         const clickPrompt = document.getElementById('click-prompt');
-        const videoContainer = document.getElementById('video-container');
-        const marvelVideo = document.getElementById('marvel-video');
-        const fallbackIntro = document.getElementById('fallback-intro');
+        const introBgWrapper = document.getElementById('intro-bg-wrapper');
+        const marvelAnim = document.getElementById('marvel-anim');
+        const mText = document.getElementById('m-text');
+        const sText = document.getElementById('s-text');
         const mainScene = document.getElementById('main-scene');
 
         function startPortfolio() {
@@ -583,31 +624,15 @@
                     clickPromise.catch(error => console.log("Click sound not found. Add click_sound.mp3 to the folder."));
                 }
                 
-                // Show video container and try to play
-                videoContainer.style.display = 'block';
-                const playPromise = marvelVideo.play();
-
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        // Video failed to play or load (e.g. file missing)
-                        console.log("Video not found or autoplay prevented. Falling back to CSS intro.");
-                        videoContainer.style.display = 'none';
-                        fallbackIntro.style.display = 'flex';
-                        setTimeout(startPortfolio, 3500); // Wait for CSS animation
-                    });
-                }
-
-                // If video plays successfully, wait for it to end
-                marvelVideo.onended = function() {
-                    startPortfolio();
-                };
+                // Show CSS intro
+                introBgWrapper.style.display = 'block';
+                marvelAnim.style.display = 'flex';
                 
-                // Fallback if video throws an error during load
-                marvelVideo.onerror = function() {
-                    videoContainer.style.display = 'none';
-                    fallbackIntro.style.display = 'flex';
-                    setTimeout(startPortfolio, 3500);
-                };
+                // Trigger text animations
+                mText.classList.add('animate-text');
+                sText.classList.add('animate-studios');
+                
+                setTimeout(startPortfolio, 4100);
             }
         });
     </script>
