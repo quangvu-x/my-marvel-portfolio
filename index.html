@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vu Duy Quang - Portfolio</title>
+    <!-- Authentic Marvel-style fonts: Bebas Neue for headers, Montserrat for readability -->
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --marvel-red: #E23636;
+            --marvel-dark: #121212;
+            --text-main: #FFFFFF;
+            --text-muted: #B0B0B0;
+            --card-bg: rgba(20, 20, 20, 0.95);
+            --card-border: #333;
+        }
+        
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            background-color: #050505;
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow: hidden; /* Prevent scroll during intro */
+        }
+
+        /* COMIC/TECH BACKGROUND */
+        .bg-pattern {
+            position: fixed;
+            inset: 0;
+            background-image: 
+                radial-gradient(rgba(226, 54, 54, 0.15) 1px, transparent 1px),
+                radial-gradient(rgba(226, 54, 54, 0.15) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.8;
+        }
+
+        /* INTRO SCENE */
+        #intro-scene {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #000;
+            z-index: 1000;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #click-prompt {
+            color: white;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.5rem;
+            letter-spacing: 4px;
+            animation: pulse 1.5s infinite;
+            cursor: pointer;
+            padding: 15px 30px;
+            border: 2px solid white;
+            border-radius: 4px;
+            transition: all 0.3s;
+            background: rgba(0,0,0,0.5);
+            text-shadow: 2px 2px 0px var(--marvel-red);
+        }
+
+        #click-prompt:hover {
+            background: var(--marvel-red);
+            border-color: var(--marvel-red);
+            text-shadow: none;
+            transform: scale(1.05);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; }
+            50% { opacity: 1; }
+        }
+
+        #video-container {
+            display: none;
+            width: 100%;
+            height: 100%;
+            background: black;
+        }
+
+        #marvel-video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* FALLBACK INTRO IF VIDEO FAILS */
+        .fallback-intro {
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: zoomIn 3.5s forwards;
+            flex-direction: column;
+        }
+
+        .marvel-box {
+            background-color: var(--marvel-red);
+            padding: 5px 20px;
+            overflow: hidden;
+            border-radius: 2px;
+        }
+
+        .marvel-text {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(4rem, 10vw, 8rem);
+            color: white;
+            margin: 0;
+            line-height: 1.1;
+            letter-spacing: 2px;
+        }
+
+        @keyframes zoomIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            10% { transform: scale(1); opacity: 1; }
+            80% { transform: scale(1); opacity: 1; filter: blur(0); }
+            100% { transform: scale(10); opacity: 0; filter: blur(5px); }
+        }
+
+        /* MAIN PORTFOLIO SCENE */
+        #main-scene {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            visibility: hidden;
+            overflow-y: auto;
+            background-color: #0a0a0a;
+            z-index: 50;
+            padding: 60px 20px;
+            transition: opacity 1s ease;
+        }
+
+        #main-scene.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* Profile & Hero */
+        .header {
+            text-align: center;
+            margin-bottom: 70px;
+            animation: slideUp 1s ease 0.5s both;
+        }
+
+        .profile-container {
+            margin-bottom: 25px;
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-pic {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid var(--marvel-red);
+            box-shadow: 0 0 30px rgba(226, 54, 54, 0.4);
+            transition: transform 0.3s;
+            background-color: #222;
+        }
+        
+        .profile-pic:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .header h1 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(3.5rem, 8vw, 5.5rem);
+            margin: 0;
+            letter-spacing: 5px;
+            text-shadow: 4px 4px 0px var(--marvel-red);
+            text-transform: uppercase;
+        }
+
+        .header h2 {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 2.2rem;
+            color: var(--text-muted);
+            margin: 5px 0 25px 0;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+        }
+
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            font-size: 0.95rem;
+            font-weight: 600;
+        }
+        
+        .contact-info span {
+            background: rgba(20, 20, 20, 0.8);
+            padding: 10px 20px;
+            border-radius: 2px;
+            border: 1px solid #444;
+            border-bottom: 3px solid var(--marvel-red);
+            transition: all 0.3s;
+            font-family: 'Montserrat', sans-serif;
+        }
+
+        .contact-info span:hover {
+            background: var(--marvel-red);
+            color: white;
+            border-color: var(--marvel-red);
+            transform: translateY(-3px);
+        }
+
+        /* Sections */
+        .section {
+            margin-bottom: 70px;
+            animation: slideUp 1s ease 0.7s both;
+            position: relative;
+        }
+
+        .section-title-wrapper {
+            margin-bottom: 40px;
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+
+        .section-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: white;
+            text-transform: uppercase;
+            margin: 0;
+            display: inline-block;
+            letter-spacing: 2px;
+            padding: 5px 30px;
+            background-color: var(--marvel-red);
+            transform: skewX(-15deg);
+            box-shadow: 5px 5px 0px rgba(0,0,0,0.6);
+        }
+        
+        .section-title span {
+            display: inline-block;
+            transform: skewX(15deg);
+        }
+
+        /* Grid for cards */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        /* Cards (Comic Book Style) */
+        .card {
+            background: var(--card-bg);
+            border: 2px solid var(--card-border);
+            padding: 30px;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+            position: relative;
+            box-shadow: 6px 6px 0px rgba(255, 255, 255, 0.05);
+        }
+
+        .card:hover {
+            transform: translateY(-5px) scale(1.02);
+            border-color: var(--marvel-red);
+            box-shadow: 8px 8px 0px var(--marvel-red);
+        }
+
+        .card h3 {
+            font-family: 'Bebas Neue', sans-serif;
+            margin: 0 0 5px 0;
+            font-size: 2rem;
+            color: white;
+            letter-spacing: 2px;
+        }
+        
+        .card .subtitle {
+            color: var(--marvel-red);
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .card .date {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+            font-weight: 600;
+            display: inline-block;
+            background: #222;
+            padding: 6px 12px;
+            border-radius: 2px;
+            border-left: 4px solid var(--marvel-red);
+        }
+
+        .card ul {
+            margin: 0; padding-left: 20px;
+            color: #d0d0d0;
+            font-size: 0.95rem;
+            line-height: 1.8;
+        }
+
+        .card ul li { margin-bottom: 12px; }
+
+        /* Tags */
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .tag {
+            background: transparent;
+            color: white;
+            border: 2px solid var(--marvel-red);
+            padding: 8px 16px;
+            border-radius: 2px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            text-transform: uppercase;
+            font-family: 'Montserrat', sans-serif;
+        }
+        
+        .tag:hover {
+            background: var(--marvel-red);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* About Text */
+        .about-text {
+            font-size: 1.1rem;
+            line-height: 1.8;
+            color: #d0d0d0;
+            background: rgba(20, 20, 20, 0.95);
+            padding: 40px;
+            border: 2px solid #333;
+            border-left: 6px solid var(--marvel-red);
+            box-shadow: 6px 6px 0px rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(40px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 10px; }
+        ::-webkit-scrollbar-track { background: var(--marvel-dark); border-left: 1px solid #333; }
+        ::-webkit-scrollbar-thumb { background: var(--marvel-red); }
+        ::-webkit-scrollbar-thumb:hover { background: #ff3333; }
+        
+    </style>
+</head>
+<body>
+
+    <div class="bg-pattern"></div>
+
+    <!-- INTRO SCENE -->
+    <div id="intro-scene">
+        <div id="click-prompt">CLICK TO ENTER</div>
+        
+        <!-- Video Container for Custom Marvel Intro -->
+        <div id="video-container">
+            <!-- Ensure to have marvel_intro.mp4 in the same directory -->
+            <video id="marvel-video" src="marvel_intro.mp4" playsinline></video>
+        </div>
+
+        <!-- Fallback CSS Intro if Video is Missing -->
+        <div class="fallback-intro" id="fallback-intro">
+            <div class="marvel-box">
+                <div class="marvel-text">VU DUY QUANG</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN SCENE -->
+    <div id="main-scene">
+        <div class="container">
+            <header class="header">
+                <div class="profile-container">
+                    <img src="profile.jpg" alt="Vu Duy Quang" class="profile-pic" onerror="this.src='https://via.placeholder.com/200x200?text=Profile'">
+                </div>
+                <h1>VU DUY QUANG</h1>
+                <h2>Data Analyst</h2>
+                <div class="contact-info">
+                    <span>contactwquang@gmail.com</span>
+                    <span>0363630255</span>
+                    <span>Hanoi, Vietnam</span>
+                </div>
+            </header>
+
+            <section class="section">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title"><span>🛡️ Personal Goal</span></h2>
+                </div>
+                <div class="about-text">
+                    Highly motivated International Business Economics student at Foreign Trade University with a strong technical foundation in SQL, Python, and Power BI. Seeking a <strong style="color: white;">Data Analyst internship</strong> to leverage analytical skills in solving real-world business challenges. Eager to contribute to product management optimization and gain deep insights into corporate operations while driving data-informed decision-making.
+                </div>
+            </section>
+            
+            <section class="section">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title"><span>⚡ Experience</span></h2>
+                </div>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Data Analyst Intern</h3>
+                        <div class="subtitle">FPT IS | Hanoi</div>
+                        <div class="date">June 2026 - Present</div>
+                        <ul>
+                            <li>Designed and built a multi-layer Data Warehouse (Staging → SOR → Mart) for a Cambodian banking client, focusing on the Loan & Credit Risk data mart to support credit decision-making and regulatory reporting.</li>
+                            <li>Mapped and transformed data across pipeline stages using SQL, ensuring data consistency, accuracy, and traceability from source systems through to the final risk mart.</li>
+                            <li>Built Power BI dashboards to visualize loan and credit risk metrics for stakeholders, and contributed to streamlining the mapping/ETL workflow, improving team efficiency by approximately 15%.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title"><span>🚀 Projects</span></h2>
+                </div>
+                <div class="grid">
+                    <div class="card">
+                        <h3>ML Adaptation in Sales</h3>
+                        <div class="date">January 2026</div>
+                        <ul>
+                            <li>Proficient in using Python for data cleaning, detecting outliers, validating data quality, and preparing reliable datasets for accurate analysis.</li>
+                            <li>Able to translate technical insights into actionable business recommendations and present them clearly to both technical and non-technical stakeholders.</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3>Retail Sales Analysis</h3>
+                        <div class="date">October 2025</div>
+                        <ul>
+                            <li>Skilled in using Power BI for building and interpreting clear, insightful visualizations (line charts, bar charts, heatmaps, treemaps, box plots) to communicate complex findings effectively.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title"><span>🧬 Skills</span></h2>
+                </div>
+                <div class="card" style="padding: 40px;">
+                    <h3 style="margin-bottom: 25px; border-bottom: 1px solid #444; padding-bottom: 10px;">Technical Skills</h3>
+                    <div class="tags" style="margin-bottom: 40px;">
+                        <span class="tag">Python (Pandas, NumPy)</span>
+                        <span class="tag">SQL (Querying, Joins)</span>
+                        <span class="tag">Excel (VBA, Pivots)</span>
+                        <span class="tag">Power BI</span>
+                        <span class="tag">Data Analytics</span>
+                        <span class="tag">Canva</span>
+                        <span class="tag">MS Office</span>
+                    </div>
+                    
+                    <h3 style="margin-bottom: 25px; border-bottom: 1px solid #444; padding-bottom: 10px;">Languages & Certs</h3>
+                    <div class="tags">
+                        <span class="tag">English (C1)</span>
+                        <span class="tag">Japanese (N5)</span>
+                        <span class="tag">IELTS: 7.5</span>
+                        <span class="tag">SAT: 1540</span>
+                    </div>
+                </div>
+            </section>
+            
+            <section class="section">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title"><span>🌟 Leadership</span></h2>
+                </div>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Vice Head of External Relations</h3>
+                        <div class="subtitle">VN Union of Students - FTU</div>
+                        <div class="date">August 2025 - Present</div>
+                        <p style="color: var(--text-muted); font-size: 0.9rem; margin-top: -10px; margin-bottom: 15px; font-style: italic;">*Previously External Relations (Nov 2024 - July 2025)</p>
+                        <ul>
+                            <li>Led external partnership initiatives, negotiating with sponsors, organizations, and universities to secure collaborations for student activities (TEDx FTUHanoi, Happy Day XV, Beauty & Charm).</li>
+                            <li>Sub-Lead for Happy Day XV, a blood donation campaign at FTU, attracting over 700 blood units and raising 25M VND sponsorship.</li>
+                            <li>Oversaw internal coordination by assigning tasks, monitoring progress, and ensuring accountability, enhancing team efficiency.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="section">
+                <div class="section-title-wrapper">
+                    <h2 class="section-title"><span>🎓 Education & Awards</span></h2>
+                </div>
+                <div class="grid">
+                    <div class="card">
+                        <h3>Foreign Trade University</h3>
+                        <div class="subtitle">Intl. Business Economics</div>
+                        <div class="date">Graduation: 2028</div>
+                        <p style="color: #d0d0d0; font-size: 0.95rem; margin-top: 10px;">Location: Chua Lang, Hanoi</p>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>Accounting & Biz Case</h3>
+                        <div class="subtitle">FAASA FTU - 1st Runner-up</div>
+                        <div class="date">April 2026</div>
+                        <ul>
+                            <li>Analysed real-world case studies to structure operational plans and present data-driven recommendations.</li>
+                            <li>Developed competitive pricing strategies grounded in market analysis and cost modelling.</li>
+                            <li>Produced polished marketing and design deliverables.</li>
+                        </ul>
+                    </div>
+
+                    <div class="card">
+                        <h3>Borderless Hackonomics</h3>
+                        <div class="subtitle">2nd Place Uni Round</div>
+                        <div class="date">October 2025</div>
+                        <ul>
+                            <li>Developed innovative economic solutions blending real-world data with unconventional problem-framing.</li>
+                            <li>Crafted compelling marketing narratives around proposals to communicate complex concepts.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+            
+            <footer style="text-align: center; color: #666; padding: 40px 0; font-size: 0.9rem; border-top: 1px solid #222; margin-top: 50px;">
+                <p>Designed with a Marvel Cinematic Theme</p>
+            </footer>
+        </div>
+    </div>
+
+    <!-- Audio Elements for Sound Effects and Background Music -->
+    <!-- HƯỚNG DẪN: Đặt file nhạc nền tên "bg_music.mp3" và âm thanh click "click_sound.mp3" vào cùng thư mục này -->
+    <audio id="click-sfx" src="click_sound.mp3" preload="auto"></audio>
+    <audio id="bg-music" src="bg_music.mp3" loop preload="auto"></audio>
+
+    <script>
+        const clickSfx = document.getElementById('click-sfx');
+        const bgMusic = document.getElementById('bg-music');
+        
+        const introScene = document.getElementById('intro-scene');
+        const clickPrompt = document.getElementById('click-prompt');
+        const videoContainer = document.getElementById('video-container');
+        const marvelVideo = document.getElementById('marvel-video');
+        const fallbackIntro = document.getElementById('fallback-intro');
+        const mainScene = document.getElementById('main-scene');
+
+        function startPortfolio() {
+            introScene.style.opacity = '0';
+            mainScene.classList.add('active');
+            document.body.style.overflow = 'auto';
+            
+            // Play background music
+            bgMusic.volume = 0.5; // Đặt âm lượng nhạc nền (0.0 đến 1.0)
+            let bgmPromise = bgMusic.play();
+            if (bgmPromise !== undefined) {
+                bgmPromise.catch(error => console.log("Background music not found. Add bg_music.mp3 to the folder."));
+            }
+
+            setTimeout(() => {
+                introScene.style.display = 'none';
+            }, 1000);
+        }
+
+        introScene.addEventListener('click', function() {
+            if (clickPrompt.style.display !== 'none') {
+                clickPrompt.style.display = 'none';
+                
+                // Play click sound effect
+                let clickPromise = clickSfx.play();
+                if (clickPromise !== undefined) {
+                    clickPromise.catch(error => console.log("Click sound not found. Add click_sound.mp3 to the folder."));
+                }
+                
+                // Show video container and try to play
+                videoContainer.style.display = 'block';
+                const playPromise = marvelVideo.play();
+
+                if (playPromise !== undefined) {
+                    playPromise.catch(error => {
+                        // Video failed to play or load (e.g. file missing)
+                        console.log("Video not found or autoplay prevented. Falling back to CSS intro.");
+                        videoContainer.style.display = 'none';
+                        fallbackIntro.style.display = 'flex';
+                        setTimeout(startPortfolio, 3500); // Wait for CSS animation
+                    });
+                }
+
+                // If video plays successfully, wait for it to end
+                marvelVideo.onended = function() {
+                    startPortfolio();
+                };
+                
+                // Fallback if video throws an error during load
+                marvelVideo.onerror = function() {
+                    videoContainer.style.display = 'none';
+                    fallbackIntro.style.display = 'flex';
+                    setTimeout(startPortfolio, 3500);
+                };
+            }
+        });
+    </script>
+</body>
+</html>
